@@ -3,7 +3,6 @@ from app.models.planet import Planet
 from app import db
 
 
-
 # class Planet:
 #     def __init__(self, name, id, description, moons):
 #         self.name = name
@@ -29,6 +28,8 @@ from app import db
 planets_bp = Blueprint("planets", __name__, url_prefix="/planets")
 
 # CREATE PLANET
+
+
 @planets_bp.route("",  methods=["POST"])
 def create_planet():
     request_body = request.get_json()
@@ -37,27 +38,28 @@ def create_planet():
         name=request_body['name'],
         description=request_body['description'],
         moons=request_body['moons']
-        
     )
-    
+
     db.session.add(new_planet)
     db.session.commit()
 
-    return make_response(f"Planet {new_planet.name} has been succesfully created!",201)
+    return make_response(f"Planet {new_planet.name} has been succesfully created!", 201)
+
 
 def validate(planet_id):
     try:
         planet_id = int(planet_id)
     except:
-        return abort(make_response({"message" :f"planet {planet_id} invalid"}, 400))
+        return abort(make_response({"message": f"planet {planet_id} invalid"}, 400))
 
     planet = Planet.query.get(planet_id)
     if not planet:
-
-        return abort(make_response({"message" :f"planet {planet_id} not found"}, 404))
+        return abort(make_response({"message": f"planet {planet_id} not found"}, 404))
     return planet
 
 # GET ALL PLANETS
+
+
 @planets_bp.route("", methods=["GET"])
 def read_all_planets():
     response = []
@@ -67,8 +69,8 @@ def read_all_planets():
 
     return jsonify(response)
 
+
 @planets_bp.route("/<planet_id>", methods=["GET"])
 def read_one_planet(planet_id):
     planet = validate(planet_id)
-    return jsonify(planet.to_json(),200)
-
+    return jsonify(planet.to_json(), 200)
