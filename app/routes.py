@@ -62,15 +62,37 @@ def validate(planet_id):
 
 @planets_bp.route("", methods=["GET"])
 def read_all_planets():
-    response = []
     planets = Planet.query.all()
-    for planet in planets:
-        response.append(planet.to_json())
+    response = [planet.to_json() for planet in planets]
 
-    return jsonify(response)
+    return jsonify(response), 200
 
 
 @planets_bp.route("/<planet_id>", methods=["GET"])
 def read_one_planet(planet_id):
     planet = validate(planet_id)
-    return jsonify(planet.to_json(), 200)
+    response = planet.to_json()
+    return jsonify(response), 200
+
+
+@planets_bp.route("/<planet_id>", methods=["PUT"])
+def update_one_planet(planet_id):
+    planet = validate(planet_id)
+    request_body = request.get_json()
+
+    planet.name = request_body["name"]
+    planet.description = request_body["description"]
+    planet.moons = request_body["moons"]
+
+    db.session.commit()
+
+    return make_response({"message": f"planet {planet_id} succesfully updated"}, 200)
+
+
+@planets_bp.route("/<planet_id>", methods=["DELETE"])
+def delete_one_planet(planet_id):
+    planet = validate(planet_id)
+    db.session.delete(planet)
+    db.session.commit()
+
+    return make_response({"message": f"planet {planet_id} succesfully deleted"}, 200)
