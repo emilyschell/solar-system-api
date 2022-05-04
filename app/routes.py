@@ -62,7 +62,16 @@ def validate(planet_id):
 
 @planets_bp.route("", methods=["GET"])
 def read_all_planets():
-    planets = Planet.query.all()
+    moons_query = request.args.get("moons")
+    descriptions_query = request.args.get("description")
+    
+    if moons_query:
+        planets = Planet.query.filter_by(moons=moons_query)
+    elif descriptions_query:
+        planets = Planet.query.filter_by(description=descriptions_query)
+    else:
+        planets = Planet.query.all()
+
     response = [planet.to_json() for planet in planets]
 
     return jsonify(response), 200
