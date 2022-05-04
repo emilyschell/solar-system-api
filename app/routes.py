@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, abort, make_response, request
+from flask import Blueprint, jsonify, make_response, request
 from app.models.planet import Planet
 from app import db
 from .helpers import validate
@@ -28,7 +28,7 @@ from .helpers import validate
 
 planets_bp = Blueprint("planets", __name__, url_prefix="/planets")
 
-# CREATE PLANET
+# POST ROUTES
 
 
 @planets_bp.route("",  methods=["POST"])
@@ -42,19 +42,18 @@ def create_planet():
 
     return make_response(f"Planet {new_planet.name} has been succesfully created!", 201)
 
-
-# GET ALL PLANETS
+# GET ROUTES
 
 
 @planets_bp.route("", methods=["GET"])
 def read_all_planets():
     moons_query = request.args.get("moons")
-    descriptions_query = request.args.get("description")
+    description_query = request.args.get("description")
 
     if moons_query:
         planets = Planet.query.filter_by(moons=moons_query)
-    elif descriptions_query:
-        planets = Planet.query.filter_by(description=descriptions_query)
+    elif description_query:
+        planets = Planet.query.filter_by(description=description_query)
     else:
         planets = Planet.query.all()
 
@@ -69,6 +68,8 @@ def read_one_planet(planet_id):
     response = planet.to_json()
     return jsonify(response), 200
 
+# PUT ROUTES
+
 
 @planets_bp.route("/<planet_id>", methods=["PUT"])
 def update_one_planet(planet_id):
@@ -80,6 +81,8 @@ def update_one_planet(planet_id):
     db.session.commit()
 
     return make_response({"message": f"planet {planet_id} succesfully updated"}, 200)
+
+# DELETE ROUTES
 
 
 @planets_bp.route("/<planet_id>", methods=["DELETE"])
