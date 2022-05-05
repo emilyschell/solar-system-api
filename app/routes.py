@@ -40,7 +40,7 @@ def create_planet():
     db.session.add(new_planet)
     db.session.commit()
 
-    return make_response(f"Planet {new_planet.name} has been succesfully created!", 201)
+    return make_response(jsonify(f"Planet {new_planet.name} has been successfully created!"), 201)
 
 # GET ROUTES
 
